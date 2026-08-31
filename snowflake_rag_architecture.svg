@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#334155"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#0EA5E9"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1200" height="780" fill="#FFFFFF"/>
+
+  <!-- Title -->
+  <text x="600" y="40" text-anchor="middle" font-size="26" font-weight="700" fill="#0B3C5D">RAG Chatbot on Snowflake — Technical Architecture</text>
+  <text x="600" y="64" text-anchor="middle" font-size="14" fill="#64748B">PDF documents to grounded, cited answers — entirely inside Snowflake</text>
+
+  <!-- Platform boundary -->
+  <rect x="30" y="85" width="1140" height="600" rx="16" fill="#F8FAFC" stroke="#94A3B8" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="52" y="112" font-size="14" font-weight="700" fill="#475569">SNOWFLAKE ACCOUNT · database RAG_DB · schema CHATBOT</text>
+
+  <!-- ============ INGESTION LANE ============ -->
+  <text x="52" y="150" font-size="15" font-weight="700" fill="#0369A1">1 · INGESTION PIPELINE  (one-time build)</text>
+
+  <!-- Ingestion boxes: y=165 h=100 -->
+  <!-- box 1 -->
+  <rect x="55" y="165" width="175" height="100" rx="10" fill="#EAF7FC" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="142" y="200" text-anchor="middle" font-size="15" font-weight="700" fill="#0B3C5D">PDF documents</text>
+  <text x="142" y="222" text-anchor="middle" font-size="12" fill="#475569">Surgicare policy</text>
+  <text x="142" y="240" text-anchor="middle" font-size="11" fill="#64748B">(source files)</text>
+
+  <!-- box 2 -->
+  <rect x="285" y="165" width="175" height="100" rx="10" fill="#EAF7FC" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="372" y="198" text-anchor="middle" font-size="15" font-weight="700" fill="#0B3C5D">Internal Stage</text>
+  <text x="372" y="220" text-anchor="middle" font-size="12" fill="#475569">DOCS_STAGE</text>
+  <text x="372" y="240" text-anchor="middle" font-size="11" fill="#64748B">file storage</text>
+
+  <!-- box 3 -->
+  <rect x="515" y="165" width="175" height="100" rx="10" fill="#EAF7FC" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="602" y="196" text-anchor="middle" font-size="14" font-weight="700" fill="#0B3C5D">Parse</text>
+  <text x="602" y="216" text-anchor="middle" font-size="11" fill="#475569">AI_PARSE_DOCUMENT</text>
+  <text x="602" y="236" text-anchor="middle" font-size="11" fill="#64748B">&#8594; DOCS_PARSED</text>
+
+  <!-- box 4 -->
+  <rect x="745" y="165" width="175" height="100" rx="10" fill="#EAF7FC" stroke="#0EA5E9" stroke-width="2"/>
+  <text x="832" y="196" text-anchor="middle" font-size="14" font-weight="700" fill="#0B3C5D">Chunk</text>
+  <text x="832" y="216" text-anchor="middle" font-size="11" fill="#475569">SPLIT_TEXT_RECURSIVE</text>
+  <text x="832" y="236" text-anchor="middle" font-size="11" fill="#64748B">&#8594; DOCS_CHUNKS</text>
+
+  <!-- box 5 -->
+  <rect x="975" y="165" width="175" height="100" rx="10" fill="#DFF3FB" stroke="#0284C7" stroke-width="2.5"/>
+  <text x="1062" y="193" text-anchor="middle" font-size="14" font-weight="700" fill="#0B3C5D">Cortex Search</text>
+  <text x="1062" y="211" text-anchor="middle" font-size="12" font-weight="700" fill="#0B3C5D">Service</text>
+  <text x="1062" y="230" text-anchor="middle" font-size="10.5" fill="#475569">POLICY_SEARCH_SVC</text>
+  <text x="1062" y="247" text-anchor="middle" font-size="10.5" fill="#64748B">embed + index</text>
+
+  <!-- ingestion arrows -->
+  <line x1="230" y1="215" x2="283" y2="215" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="460" y1="215" x2="513" y2="215" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="690" y1="215" x2="743" y2="215" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="920" y1="215" x2="973" y2="215" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- embedding note -->
+  <text x="1062" y="288" text-anchor="middle" font-size="10.5" fill="#0369A1" font-style="italic">arctic-embed-l-v2.0 · 1024-dim vectors</text>
+
+  <!-- ============ QUERY LANE ============ -->
+  <text x="52" y="360" font-size="15" font-weight="700" fill="#B45309">2 · QUERY PIPELINE  (runtime — per question)</text>
+
+  <!-- Query boxes: y=375 h=100 -->
+  <rect x="55" y="375" width="175" height="100" rx="10" fill="#FFF4E6" stroke="#F59E0B" stroke-width="2"/>
+  <text x="142" y="410" text-anchor="middle" font-size="15" font-weight="700" fill="#7C2D12">User question</text>
+  <text x="142" y="432" text-anchor="middle" font-size="11" fill="#78716C">"Summarise the</text>
+  <text x="142" y="448" text-anchor="middle" font-size="11" fill="#78716C">policy", etc.</text>
+
+  <rect x="285" y="375" width="175" height="100" rx="10" fill="#FFF4E6" stroke="#F59E0B" stroke-width="2"/>
+  <text x="372" y="406" text-anchor="middle" font-size="14" font-weight="700" fill="#7C2D12">Streamlit App</text>
+  <text x="372" y="426" text-anchor="middle" font-size="11" fill="#78716C">chat UI · model picker</text>
+  <text x="372" y="444" text-anchor="middle" font-size="11" fill="#78716C">warehouse runtime</text>
+
+  <rect x="515" y="375" width="175" height="100" rx="10" fill="#FFF4E6" stroke="#F59E0B" stroke-width="2"/>
+  <text x="602" y="406" text-anchor="middle" font-size="14" font-weight="700" fill="#7C2D12">Retrieve</text>
+  <text x="602" y="426" text-anchor="middle" font-size="11" fill="#78716C">SEARCH_PREVIEW</text>
+  <text x="602" y="444" text-anchor="middle" font-size="11" fill="#78716C">top-k chunks</text>
+
+  <rect x="745" y="375" width="175" height="100" rx="10" fill="#FFF4E6" stroke="#F59E0B" stroke-width="2"/>
+  <text x="832" y="402" text-anchor="middle" font-size="14" font-weight="700" fill="#7C2D12">Generate</text>
+  <text x="832" y="421" text-anchor="middle" font-size="11" fill="#78716C">CORTEX.COMPLETE</text>
+  <text x="832" y="438" text-anchor="middle" font-size="10.5" fill="#78716C">Llama 3.1 / Claude</text>
+  <text x="832" y="455" text-anchor="middle" font-size="10.5" fill="#78716C">+ guardrails</text>
+
+  <rect x="975" y="375" width="175" height="100" rx="10" fill="#FFF4E6" stroke="#F59E0B" stroke-width="2"/>
+  <text x="1062" y="410" text-anchor="middle" font-size="14" font-weight="700" fill="#7C2D12">Grounded answer</text>
+  <text x="1062" y="432" text-anchor="middle" font-size="11" fill="#78716C">&#8804; word limit</text>
+  <text x="1062" y="450" text-anchor="middle" font-size="11" fill="#78716C">+ page sources</text>
+
+  <!-- query arrows -->
+  <line x1="230" y1="425" x2="283" y2="425" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="460" y1="425" x2="513" y2="425" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="690" y1="425" x2="743" y2="425" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="920" y1="425" x2="973" y2="425" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- link: search service index used by retrieve (vertical) -->
+  <path d="M1062,265 L1062,320 L602,320 L602,373" fill="none" stroke="#0EA5E9" stroke-width="2.2" stroke-dasharray="6 5" marker-end="url(#arrowBlue)"/>
+  <text x="832" y="313" text-anchor="middle" font-size="11.5" fill="#0369A1" font-style="italic">index queried at runtime</text>
+
+  <!-- answer feeds back to UI (optional dashed) -->
+  <path d="M1062,475 L1062,520 L372,520 L372,477" fill="none" stroke="#F59E0B" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrow)"/>
+  <text x="717" y="513" text-anchor="middle" font-size="11.5" fill="#B45309" font-style="italic">answer shown in chat UI</text>
+
+  <!-- ============ FOOTER: platform services ============ -->
+  <rect x="55" y="560" width="1095" height="98" rx="10" fill="#EEF2F7" stroke="#CBD5E1" stroke-width="1.5"/>
+  <text x="602" y="586" text-anchor="middle" font-size="13" font-weight="700" fill="#334155">SHARED SNOWFLAKE PLATFORM SERVICES</text>
+
+  <text x="180" y="616" text-anchor="middle" font-size="12" font-weight="700" fill="#0B3C5D">Compute</text>
+  <text x="180" y="636" text-anchor="middle" font-size="11" fill="#475569">CHATBOT_WH (XS)</text>
+  <text x="180" y="651" text-anchor="middle" font-size="11" fill="#475569">auto-suspend 60s</text>
+
+  <text x="430" y="616" text-anchor="middle" font-size="12" font-weight="700" fill="#0B3C5D">Security</text>
+  <text x="430" y="636" text-anchor="middle" font-size="11" fill="#475569">Role: ACCOUNTADMIN</text>
+  <text x="430" y="651" text-anchor="middle" font-size="11" fill="#475569">data stays in-account</text>
+
+  <text x="680" y="616" text-anchor="middle" font-size="12" font-weight="700" fill="#0B3C5D">Cortex AI</text>
+  <text x="680" y="636" text-anchor="middle" font-size="11" fill="#475569">parse · embed · search</text>
+  <text x="680" y="651" text-anchor="middle" font-size="11" fill="#475569">complete (cross-region)</text>
+
+  <text x="930" y="616" text-anchor="middle" font-size="12" font-weight="700" fill="#0B3C5D">Storage</text>
+  <text x="930" y="636" text-anchor="middle" font-size="11" fill="#475569">stage · tables ·</text>
+  <text x="930" y="651" text-anchor="middle" font-size="11" fill="#475569">search index</text>
+
+  <!-- dividers in footer -->
+  <line x1="305" y1="600" x2="305" y2="648" stroke="#CBD5E1" stroke-width="1.5"/>
+  <line x1="555" y1="600" x2="555" y2="648" stroke="#CBD5E1" stroke-width="1.5"/>
+  <line x1="805" y1="600" x2="805" y2="648" stroke="#CBD5E1" stroke-width="1.5"/>
+
+  <!-- caption -->
+  <text x="600" y="712" text-anchor="middle" font-size="12" fill="#64748B">Ingestion runs once to build the index; the query pipeline runs on every user question. No external vector DB, embedding code, or web host required.</text>
+  <text x="600" y="740" text-anchor="middle" font-size="11" fill="#94A3B8">Alternative retrieval path: DIY embeddings in DOCS_EMBEDDINGS (VECTOR 1024) + VECTOR_COSINE_SIMILARITY — no always-on search service.</text>
+</svg>
